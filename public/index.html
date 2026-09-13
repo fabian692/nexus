@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Nexus - Chat & Video</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div id="login-screen" class="screen active">
+    <div class="login-card">
+      <div class="logo">
+        <i class="fas fa-comments"></i>
+        <h1>Nexus</h1>
+      </div>
+      <p class="tagline">Chat y videollamadas en tiempo real</p>
+      <input type="text" id="username-input" placeholder="Tu nombre de usuario" maxlength="20" autocomplete="off">
+      <button id="join-btn" class="btn primary">
+        <i class="fas fa-sign-in-alt"></i> Entrar
+      </button>
+      <p class="hint">Conéctate y comienza a chatear o llamar</p>
+    </div>
+  </div>
+
+  <div id="app" class="screen">
+    <header class="header">
+      <div class="header-left">
+        <button id="menu-toggle" class="icon-btn mobile-only" title="Menú">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo-small">
+          <i class="fas fa-comments"></i>
+          <span>Nexus</span>
+        </div>
+        <span id="room-badge" class="my-id">#general</span>
+        <span id="connection-status" class="conn-status online" title="Conectado">
+          <i class="fas fa-circle"></i>
+        </span>
+      </div>
+      <div class="header-right">
+        <button id="sound-toggle" class="icon-btn" title="Sonido">
+          <i class="fas fa-volume-up"></i>
+        </button>
+        <button id="theme-toggle" class="icon-btn" title="Cambiar tema">
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="user-info">
+          <div id="my-avatar" class="avatar small"></div>
+          <span id="username-display"></span>
+          <div class="status-dot online"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+          <h3>
+            <i class="fas fa-users"></i> Usuarios 
+            <span id="users-count" class="badge">0</span>
+          </h3>
+          <ul id="users-list" class="contacts-list"></ul>
+          <div id="no-users" class="empty-hint">No hay otros usuarios online</div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3><i class="fas fa-door-open"></i> Salas</h3>
+          <div class="add-contact">
+            <input type="text" id="room-name-input" placeholder="Crear / unirse a sala" maxlength="30">
+            <button id="join-room-btn" class="icon-btn" title="Unirse">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <ul id="rooms-list" class="contacts-list"></ul>
+        </div>
+      </aside>
+
+      <main class="chat-area">
+        <div class="chat-header">
+          <div id="chat-title">
+            <i class="fas fa-hashtag"></i>
+            <span>general</span>
+          </div>
+          <div class="chat-actions">
+            <button id="group-call-btn" class="btn secondary" title="Videollamada grupal de la sala">
+              <i class="fas fa-users"></i> <span class="btn-text">Grupal</span>
+            </button>
+            <button id="start-call-btn" class="btn secondary" disabled title="Selecciona un usuario para llamar">
+              <i class="fas fa-video"></i> <span class="btn-text">1:1</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="messages" class="messages">
+          <div class="empty-chat">
+            <i class="fas fa-comments"></i>
+            <p>Escribe un mensaje para comenzar</p>
+          </div>
+        </div>
+
+        <div class="typing-indicator" id="typing-indicator" style="display:none;">
+          <span class="typing-dots"><i></i><i></i><i></i></span>
+          <span class="typing-name"></span> está escribiendo...
+        </div>
+
+        <div class="message-input-area">
+          <button id="emoji-btn" class="icon-btn" title="Emojis">
+            <i class="fas fa-smile"></i>
+          </button>
+          <div id="emoji-picker" class="emoji-picker" style="display:none;">
+            <span>😀</span><span>😂</span><span>❤️</span><span>🔥</span><span>👍</span>
+            <span>🎉</span><span>😎</span><span>🤔</span><span>👏</span><span>🚀</span>
+            <span>💯</span><span>🙌</span><span>😊</span><span>🥳</span><span>💪</span>
+            <span>😍</span><span>🙏</span><span>✨</span><span>👀</span><span>🤝</span>
+          </div>
+          <input type="text" id="message-input" placeholder="Escribe un mensaje..." autocomplete="off" maxlength="1000">
+          <button id="send-btn" class="btn primary send-btn">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </main>
+
+      <div id="video-area" class="video-area hidden">
+        <div class="video-header">
+          <span id="call-status">En llamada</span>
+          <div class="video-controls">
+            <button id="toggle-mic" class="control-btn active" title="Micrófono">
+              <i class="fas fa-microphone"></i>
+            </button>
+            <button id="toggle-cam" class="control-btn active" title="Cámara">
+              <i class="fas fa-video"></i>
+            </button>
+            <button id="toggle-screen" class="control-btn" title="Compartir pantalla">
+              <i class="fas fa-desktop"></i>
+            </button>
+            <button id="end-call" class="control-btn end" title="Colgar / Salir">
+              <i class="fas fa-phone-slash"></i>
+            </button>
+          </div>
+        </div>
+        <div id="videos-grid" class="videos-grid">
+          <div class="video-wrapper local" id="local-wrapper">
+            <video id="local-video" autoplay muted playsinline></video>
+            <span class="video-label">Tú</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="incoming-call" class="modal hidden">
+    <div class="modal-content call-modal">
+      <div class="call-animation">
+        <i class="fas fa-phone-volume"></i>
+      </div>
+      <h2>Llamada entrante</h2>
+      <p id="caller-name">Alguien te está llamando...</p>
+      <div class="modal-actions">
+        <button id="accept-call" class="btn primary">
+          <i class="fas fa-phone"></i> Aceptar
+        </button>
+        <button id="reject-call" class="btn danger">
+          <i class="fas fa-phone-slash"></i> Rechazar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
