@@ -1,6 +1,6 @@
-# Nexus - Chat & Video para Raspberry Pi
+# Nexus - Chat & Video 
 
-Aplicación web de **chat + videollamadas** optimizada y lista para correr en **Raspberry Pi**.
+Aplicación web de **chat + videollamadas** optimizada y lista para correr 
 
 ## Características
 
@@ -15,14 +15,9 @@ Aplicación web de **chat + videollamadas** optimizada y lista para correr en **
 - Tema claro / oscuro
 - Diseño responsive
 
-## Requisitos en Raspberry Pi
 
-- Raspberry Pi 3, 4, 5 o Zero 2 W (recomendado Pi 4 o superior)
-- Raspberry Pi OS (Bullseye o Bookworm)
-- Node.js 18 o superior
-- Al menos 1 GB de RAM libre recomendado
 
-## 1. Instalar Node.js en Raspberry Pi
+## 1. Instalar Node.js 
 
 ```bash
 # Actualizar sistema
@@ -51,7 +46,7 @@ npm start
 ```
 
 Abre desde cualquier dispositivo en la misma red:
-**http://IP-DE-TU-RASPBERRY:3000**
+**http://IP:3000**
 
 Para saber la IP de la Raspberry Pi:
 ```bash
@@ -103,12 +98,6 @@ sudo systemctl status nexus
 
 **Importante:** Para videollamadas desde internet es muy recomendable usar **HTTPS**.
 
-## Consejos para Raspberry Pi
-
-- En Pi 3 o Zero usa poca carga (pocos usuarios simultáneos).
-- Pi 4 / Pi 5 aguantan perfectamente varias videollamadas.
-- Si usas la cámara oficial de Raspberry Pi, los clientes (navegadores) la verán normalmente a través de WebRTC.
-- Para mejor rendimiento cierra aplicaciones innecesarias.
 
 ## Estructura del proyecto
 
